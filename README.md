@@ -16,7 +16,6 @@ An interactive visualisation of spiking neural network
 to simulate a spiking neural network.
 - Based on the above-mentioned article, the membrane potential are calculated as followed in Javascript:
 ```javascript
-
 // Neuron behaviour during integration phase (below threshold)
 function updateIntegrationBehaviour(input){
   // du = ((-u(t) + rI(t)) * dt)/tau
@@ -59,7 +58,6 @@ function getPotential(input){
     }
     return potential;
 }
-
 ```
 
 ### Visualise input current and membrane potential with Google Charts
@@ -70,5 +68,5 @@ the membrane potential in "real-time".
 Inspired by the article [Asynchronous Neural Networks in JavaScript](https://desalasworks.com/article/asynchronous-neural-networks-in-javascript/) 
 by Steven de Salas, this visualisation uses [vis.js](https://visjs.org) to visualise the spiking neural network.
 
-### Github Pages
-The visualisation and the documentation is hosted using [Github Pages](https://pages.github.com)
+### GitHub Pages
+The visualisation and the documentation are hosted using [GitHub Pages](https://pages.github.com)
