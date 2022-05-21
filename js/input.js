@@ -5,10 +5,17 @@ google.charts.load("current", {
 // set callback function when api loaded
 google.charts.setOnLoadCallback(drawCharts);
 let numSynapses = 100;
-let firingIndex = 0;
-let weight = 0.07;
-let resistance = 1;
-let firingRate = 0.002;
+let inputDuration = 200; // duration of stimulation (T) in ms
+let timeStep = 1; // duration of each time step (dt) in ms
+let resistance = 1; //Ohm
+let firingRate = 0.005; //spike per second
+let potential = 0;
+const restPotential = 0; // mV
+let potentialThreshold = 1; //mV
+let restTimeConstant = 1; //ms
+let membraneTimeConstant = 4; //ms
+let refractoryPeriod = 0;
+
 const inputGraphOptions = {
     title: "Input current",
     hAxis: {
@@ -48,32 +55,31 @@ function getDefaultPotentialData() {
     ]);
 }
 
-function updateCharts(index) {
+function updateCharts(step) {
     return function () {
         // instead of this random, you can make an ajax call for the current cpu usage or what ever data you want to display
         console.log("update charts with numSynapses: ", numSynapses);
         let input = getInput(numSynapses);
-        let currentTimeMark = 5 * index;
-        let inputDuration = 400;
-        let restPeriod = 10;
+        let currentTimeMark = timeStep * step;
+        let inputDelayPeriod = 10;
         let potential = getPotential(input);
 
         // Generate random spikes between start and end time mark
-        if (restPeriod < currentTimeMark && currentTimeMark < restPeriod + inputDuration) {
+        if (inputDelayPeriod < currentTimeMark && currentTimeMark < inputDuration - inputDelayPeriod ) {
             inputData.addRow([currentTimeMark, input]);
             potentialData.addRow([currentTimeMark, potential]);
         } else {
             inputData.addRow([currentTimeMark, 0]);
             potentialData.addRow([currentTimeMark, 0]);
         }
-        if (currentTimeMark === inputDuration + 10 * restPeriod) {
+        if (currentTimeMark === inputDuration) {
             inputData = getDefaultInputData();
             potentialData = getDefaultPotentialData();
-            index = 0;
+            step = 0;
         }
         inputChart.draw(inputData, inputGraphOptions);
         potentialChart.draw(potentialData, potentialGraphOptions);
-        index++;
+        step++;
     };
 }
 
@@ -112,6 +118,37 @@ function addEventListeners(){
     }, false);
 }
 
+// def update_spike_times(self):
+//
+//         # Increase the age of older spikes
+//         old_spikes_op = self.t_spikes.assign_add(tf.where(self.t_spikes >=0,
+//                                                           tf.constant(1.0, shape=[self.max_spikes, self.n_syn]) * self.dt,
+//                                                           tf.zeros([self.max_spikes, self.n_syn])))
+//
+//         # Increment last spike index (modulo max_spikes)
+//         new_idx_op = self.t_spikes_idx.assign(tf.mod(self.t_spikes_idx + 1, self.max_spikes))
+//
+//         # Create a list of coordinates to insert the new spikes
+//         idx_op = tf.constant(1, shape=[self.n_syn], dtype=tf.int32) * new_idx_op
+//         coord_op = tf.stack([idx_op, tf.range(self.n_syn)], axis=1)
+//
+//         # Create a vector of new spike times (non-spikes are assigned a negative time)
+//         new_spikes_op = tf.where(self.syn_has_spiked,
+//                                  tf.constant(0.0, shape=[self.n_syn]),
+//                                  tf.constant(-1.0, shape=[self.n_syn]))
+//
+//         # Replace older spikes by new ones
+//         return tf.scatter_nd_update(old_spikes_op, coord_op, new_spikes_op)
+function updateSpikeTimes(){
+    // Increase the age of older spikes
+    // old_spikes_op = self.t_spikes.assign_add(tf.where(self.t_spikes >=0,
+    // tf.constant(1.0, shape=[self.max_spikes, self.n_syn]) * self.dt,
+    // tf.zeros([self.max_spikes, self.n_syn])))
+
+
+
+}
+
 function getInput(numSynapses){
     // # Override parent get_input_op method
     //     def get_input_op(self):
@@ -128,78 +165,48 @@ function getInput(numSynapses){
     //         i_op =  tf.reduce_sum(self.w * i_syn_op)
     //
     //         return tf.add(self.i_app, i_op)
-    return Math.random() * numSynapses + 20;
+    return (Math.round(Math.random()) * 2 - 1) * 3;
+}
+
+// Neuron behaviour during integration phase (below threshold)
+function updateIntegrationBehaviour(input){
+    // du = ((-u(t) + rI(t)) * dt)/tau
+    let potentialPerTimeUnit = (resistance*input - potential)/membraneTimeConstant;
+    // Update membrane potential
+    // u = du*dt
+    potential = potentialPerTimeUnit*timeStep
+    // Refractory period is 0
+    refractoryPeriod = 0;
+}
+
+// Neuron behaviour during firing phase (above threshold)
+function updateFiringBehaviour(){
+    // Reset membrane potential
+    potential = restPotential;
+    // Refractory (rest) period starts now
+    refractoryPeriod = restTimeConstant;
+
+}
+
+// Neuron behaviour during resting phase (t_rest > 0)
+function updateRestingBehaviour(){
+    // Membrane potential stays at u_rest
+    potential = restPotential;
+    // Refractory period is decreased by dt
+    refractoryPeriod = refractoryPeriod - timeStep;
+
 }
 
 function getPotential(input){
-    // # Neuron behaviour during integration phase (below threshold)
-    //     def get_integrating_op(self):
-    //
-    //         # Get input current
-    //         i_op = self.get_input_op()
-    //
-    //         # Update membrane potential
-    //         du_op = tf.divide(tf.subtract(tf.multiply(self.r, i_op), self.u), self.tau)
-    //         u_op = self.u.assign_add(du_op * self.dt)
-    //         # Refractory period is 0
-    //         t_rest_op = self.t_rest.assign(0.0)
-    //
-    //         return u_op, t_rest_op
-    //
-    //     # Neuron behaviour during firing phase (above threshold)
-    //     def get_firing_op(self):
-    //
-    //         # Reset membrane potential
-    //         u_op = self.u.assign(self.u_rest)
-    //         # Refractory period starts now
-    //         t_rest_op = self.t_rest.assign(self.tau_rest)
-    //
-    //         return u_op, t_rest_op
-    //
-    //     # Neuron behaviour during resting phase (t_rest > 0)
-    //     def get_resting_op(self):
-    //
-    //         # Membrane potential stays at u_rest
-    //         u_op = self.u.assign(self.u_rest)
-    //         # Refractory period is decreased by dt
-    //         t_rest_op = self.t_rest.assign_sub(self.dt)
-    //
-    //         return u_op, t_rest_op
-    //
-    //     def get_potential_op(self):
-    //
-    //         return tf.case(
-    //             [
-    //                 (self.t_rest > 0.0, self.get_resting_op),
-    //                 (self.u > self.u_thresh, self.get_firing_op),
-    //             ],
-    //             default=self.get_integrating_op
-    //         )
-    return Math.random() * input;
-}
+    if (refractoryPeriod > 0){
+        updateRestingBehaviour();
+    } else if (potential > potentialThreshold){
+        updateFiringBehaviour();
+    } else {
+        updateIntegrationBehaviour(input);
+    }
 
-function updateSpikeTimes(){
-    // def update_spike_times(self):
-    //
-    //         # Increase the age of older spikes
-    //         old_spikes_op = self.t_spikes.assign_add(tf.where(self.t_spikes >=0,
-    //                                                           tf.constant(1.0, shape=[self.max_spikes, self.n_syn]) * self.dt,
-    //                                                           tf.zeros([self.max_spikes, self.n_syn])))
-    //
-    //         # Increment last spike index (modulo max_spikes)
-    //         new_idx_op = self.t_spikes_idx.assign(tf.mod(self.t_spikes_idx + 1, self.max_spikes))
-    //
-    //         # Create a list of coordinates to insert the new spikes
-    //         idx_op = tf.constant(1, shape=[self.n_syn], dtype=tf.int32) * new_idx_op
-    //         coord_op = tf.stack([idx_op, tf.range(self.n_syn)], axis=1)
-    //
-    //         # Create a vector of new spike times (non-spikes are assigned a negative time)
-    //         new_spikes_op = tf.where(self.syn_has_spiked,
-    //                                  tf.constant(0.0, shape=[self.n_syn]),
-    //                                  tf.constant(-1.0, shape=[self.n_syn]))
-    //
-    //         # Replace older spikes by new ones
-    //         return tf.scatter_nd_update(old_spikes_op, coord_op, new_spikes_op)
+    return potential;
 }
 
 function stopInterval(){
