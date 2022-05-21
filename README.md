@@ -2,7 +2,7 @@
 An interactive visualisation of spiking neural network
 
 ## How to use
-- Go to [SNN Visualisation](https://vquynh.github.io/image-classification/home.html)
+- Go to [SNN Visualisation](https://vquynh.github.io/snn)
 - A default visualisation of SNN with number of synapses = 100 will start
   - You can stop the visualisation with the `Stop` button. However, the visualisation cannot continue on that stopped 
   point, so you will have to start the visualisation from t=0 again with the `Refresh` button
@@ -17,6 +17,32 @@ to simulate a spiking neural network.
 - Based on the above-mentioned article, the membrane potential are calculated as followed in Javascript:
 
 ```javascript
+// Neuron behaviour during integration phase (below threshold)
+function updateIntegrationBehaviour(input){
+  // du = ((-u(t) + rI(t)) * dt)/tau
+  let potentialPerTimeUnit = (resistance*input - potential)/membraneTimeConstant;
+  // Update membrane potential
+  // u = du*dt
+  potential = potentialPerTimeUnit*timeStep
+  // Refractory period is 0
+  refractoryPeriod = 0;
+}
+
+// Neuron behaviour during firing phase (above threshold)
+function updateFiringBehaviour(){
+  // Reset membrane potential
+  potential = restPotential;
+  // Refractory (rest) period starts now
+  refractoryPeriod = restTimeConstant;
+}
+
+// Neuron behaviour during resting phase (t_rest > 0)
+function updateRestingBehaviour(){
+  // Membrane potential stays at u_rest
+  potential = restPotential;
+  // Refractory period is decreased by dt
+  refractoryPeriod = refractoryPeriod - timeStep;
+}
 
 function getPotential(input){
         // when in refractory (resting) period
@@ -32,42 +58,6 @@ function getPotential(input){
     return potential;
 }
 
-```
-
-whereas the integration, firing and resting behaviours are as followed:
-
-```javascript
-// Neuron behaviour during integration phase (below threshold)
-function updateIntegrationBehaviour(input){
-  // du = ((-u(t) + rI(t)) * dt)/tau
-  let potentialPerTimeUnit = (resistance*input - potential)/membraneTimeConstant;
-  // Update membrane potential
-  // u = du*dt
-  potential = potentialPerTimeUnit*timeStep
-  // Refractory period is 0
-  refractoryPeriod = 0;
-}
-```
-
-```javascript
-// Neuron behaviour during firing phase (above threshold)
-function updateFiringBehaviour(){
-  // Reset membrane potential
-  potential = restPotential;
-  // Refractory (rest) period starts now
-  refractoryPeriod = restTimeConstant;
-}
-
-```
-
-```javascript
-// Neuron behaviour during resting phase (t_rest > 0)
-function updateRestingBehaviour(){
-  // Membrane potential stays at u_rest
-  potential = restPotential;
-  // Refractory period is decreased by dt
-  refractoryPeriod = refractoryPeriod - timeStep;
-}
 ```
 
 
