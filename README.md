@@ -10,11 +10,12 @@ An interactive visualisation of spiking neural network
   - Everytime the parameter changes, the visualisation will start from t=0
 
 ## How the visualisation is built
-### Simulate SNN with the leaky integrate-and-fire (LIF) model
+### SNN simulation with the leaky integrate-and-fire (LIF) model
 - The visualisation uses the leaky integrate-and-fire model as described in the article
 [Leaky Integrate and Fire neuron with Tensorflow](http://www.kaizou.org/2018/07/lif-neuron-tensorflow.html) by David Corvoysier
 to simulate a spiking neural network.
 - Based on the above-mentioned article, the membrane potential are calculated as followed in Javascript:
+
 ```javascript
 // Neuron behaviour during integration phase (below threshold)
 function updateIntegrationBehaviour(input){
@@ -58,15 +59,17 @@ function getPotential(input){
     }
     return potential;
 }
+
 ```
 
-### Visualise input current and membrane potential with Google Charts
+
+### Visualisation of input current and membrane potential with Google Charts
 [Google Charts](https://developers.google.com/chart) is used to visualise the synaptic input current and 
 the membrane potential in "real-time". 
 
-### Visualise the neural network with vis.js
+### Visualisation of neural networks with vis.js
 Inspired by the article [Asynchronous Neural Networks in JavaScript](https://desalasworks.com/article/asynchronous-neural-networks-in-javascript/) 
 by Steven de Salas, this visualisation uses [vis.js](https://visjs.org) to visualise the spiking neural network.
 
-### GitHub Pages
+### Hosting and documentation with GitHub Pages
 The visualisation and the documentation are hosted using [GitHub Pages](https://pages.github.com)
