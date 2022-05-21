@@ -1,0 +1,5 @@
+body { padding: 0 20px; }
+#network { height: 600px; }
+#input { height: 300px; }
+#potential { height: 300px; }
+#log { font: 12px "Courier New"; }

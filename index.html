@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SNN</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.18.1/vis.min.css" type="text/css" />
+  <link rel="stylesheet" href="./styles/style.css" type="text/css" />
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.18.1/vis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.3/vue.min.js"></script>
+</head>
+<body >
+<h2>SNN Neural Network Visualisation</h2>
+<div class="btn-toolbar" id="toolbar">
+  <div class="btn-group btn-group-sm" style="padding-top: 5px;">
+    <label for="numSynapses">Number of synapses: 30</label>
+    <input type="range" min="30" max="500" v-model.number="numSynapses" id="numSynapses">
+  </div>
+  <div class="btn-group btn-group-sm" style="padding-top: 5px;">
+    500
+  </div>
+  <div class="btn-group btn-group-sm pull-right">
+    <button class="btn btn-danger" id="stop" onclick="stopInterval()">Stop</button>
+  </div>
+  <div class="btn-group btn-group-sm pull-right">
+    <button class="btn btn-success" id="refresh" onclick="location.href=location.href">Refresh</button>
+  </div>
+</div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-header">Synaptic input current of a single neuron</div>
+        <div class="card-img" id="input"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">Resulting membrane potential of the neuron</div>
+        <div class="card-img" id="potential"></div>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-header">Network</div>
+        <div class="card-img" id="network"></div>
+      </div>
+    </div>
+  </div>
+  <div id="log"></div>
+<script src="./js/input.js"></script>
+<script src="./js/potential.js"></script>
+<script src="./js/network.js"></script>
+</body>
+</html>
