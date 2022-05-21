@@ -63,7 +63,17 @@ function getPotential(input){
 
 ### Visualisation of input current and membrane potential with Google Charts
 [Google Charts](https://developers.google.com/chart) is used to visualise the synaptic input current and 
-the membrane potential in "real-time". 
+the membrane potential, so it looks like they are changing in real-time. This was done by updating the charts in 250ms 
+interval with new data points.
+
+```javascript
+function drawCharts() {
+    ...
+    // draw charts on interval
+    intervalId = setInterval(
+        updateCharts(index), 250);
+}
+```
 
 ### Visualisation of neural networks with vis.js
 Inspired by the article [Asynchronous Neural Networks in JavaScript](https://desalasworks.com/article/asynchronous-neural-networks-in-javascript/) 
