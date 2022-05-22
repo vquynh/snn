@@ -47,6 +47,22 @@
   </div>
 
   <div class="col-sm-3">
+    <div class="row">
+      <div id="potentialThresholdValue">
+        <label for="potentialThreshold">Potential threshold:</label>
+        1mV
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <div class="btn-group btn-group-sm" style="padding-top: 5px;">0.1mV</div>
+        <input type="range" min="1" max="50" v-model.number="potentialThreshold" id="potentialThreshold">
+        <div class="btn-group btn-group-sm" style="padding-top: 5px;">5mV</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-3">
     <div class="btn-group btn-group-sm pull-right">
       <button class="btn btn-danger" id="stop" onclick="stopInterval()" >Stop</button>
     </div>

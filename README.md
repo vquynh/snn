@@ -3,11 +3,16 @@ An interactive visualisation of spiking neural network
 
 ## How to use
 - Go to [SNN Visualisation](https://vquynh.github.io/snn)
-- A default visualisation of SNN with number of synapses = 100 will start
+- A default visualisation of SNN with number of synapses = 30 and spiking frequency = 20 will start.
+  - The `Number of synapses` parameter is the number of synapses through which a neuron is connected to the input neuron.
+  - The `Spiking frequency` parameter is the frequency at which each synapse spikes according to an independent poisson process.
   - You can stop the visualisation with the `Stop` button. However, the visualisation cannot continue on that stopped 
   point, so you will have to start the visualisation from t=0 again with the `Refresh` button
-- Change the parameter to see how the visualisation changes
+- Change the parameters to see how the visualisation changes
   - Everytime the parameter changes, the visualisation will start from t=0
+
+## Interpretation
+- 
 
 ## How the visualisation is built
 ### SNN simulation with the leaky integrate-and-fire (LIF) model

@@ -10,12 +10,11 @@ let inputDuration = 200; // duration of stimulation (T) in ms
 let timeStep = 1; // duration of each time step (dt) in ms
 let resistance = 1; //Ohm
 let charge = 1;
-let spikingRate = 0.05; //spike per ms
 let potential = 0;
 const restPotential = 0; // mV
 let potentialThreshold = 1; //mV
-let restTimeConstant = 1; //ms
-let membraneTimeConstant = 4; //ms
+let restTimeConstant = 4; //ms
+let membraneTimeConstant = 10; //ms
 let refractoryPeriod = 0;
 let maxSpikes = 10;
 let synapticTimeConstant = 10;
@@ -82,7 +81,6 @@ function getDefaultSpikesData() {
 function updateCharts(step) {
     return function () {
         // instead of this random, you can make an ajax call for the current cpu usage or what ever data you want to display
-        console.log("update charts with numSynapses: ", numSynapses);
         let inputDelayPeriod = 10;
         let currentTimeMark = timeStep * step;
 
@@ -97,9 +95,7 @@ function updateCharts(step) {
                 synapseHasSpiked[i] = Math.random() < spikingFrequency/1000;
             }
             let input = getInput();
-            console.log("input", input);
-            console.log("currentTimeMark", currentTimeMark);
-            let potential = getPotential(input);
+            potential = getPotential(input);
 
             inputData.addRow([currentTimeMark, input]);
             potentialData.addRow([currentTimeMark, potential]);
@@ -162,6 +158,8 @@ function addEventListeners(){
             event => updateNumSynapses(event), false);
     document.getElementById('spikingFrequency').addEventListener('change',
             event => updateSpikingFrequency(event), false);
+    document.getElementById('potentialThreshold').addEventListener('change',
+            event => updatePotentialThreshold(event), false);
 }
 
 function updateNumSynapses(event){
@@ -172,15 +170,22 @@ function updateSpikingFrequency(event){
     updateValue(event, "spikingFrequency");
 }
 
+function updatePotentialThreshold(event){
+    updateValue(event, "potentialThreshold");
+}
+
 function updateValue(event, elementId){
         const value = Number(event.target.value);
         let innerText;
         if(elementId === "numSynapses"){
             numSynapses = value;
-            innerText = "Number of synapses: " + value;
-        }else{
+            innerText = "Number of synapses: " + numSynapses;
+        }else if (elementId === "spikingFrequency"){
             spikingFrequency = value;
-            innerText =  "Spiking frequency: " + value + "Hz";
+            innerText =  "Spiking frequency: " + spikingFrequency + "Hz";
+        }else {
+            potentialThreshold = value/10;
+            innerText =  "Potential Threshold: " + potentialThreshold + "mV";
         }
         clearInterval(intervalId);
         inputData = getDefaultInputData();
@@ -192,29 +197,7 @@ function updateValue(event, elementId){
             updateCharts(0), 250);
 }
 
-// def update_spike_times(self):
-//
-//         # Increase the age of older spikes
-//         old_spikes_op = self.t_spikes.assign_add(tf.where(self.t_spikes >=0,
-//                                                           tf.constant(1.0, shape=[self.max_spikes, self.n_syn]) * self.dt,
-//                                                           tf.zeros([self.max_spikes, self.n_syn])))
-//
-//         # Increment last spike index (modulo max_spikes)
-//         new_idx_op = self.t_spikes_idx.assign(tf.mod(self.t_spikes_idx + 1, self.max_spikes))
-//
-//         # Create a list of coordinates to insert the new spikes
-//         idx_op = tf.constant(1, shape=[self.n_syn], dtype=tf.int32) * new_idx_op
-//         coord_op = tf.stack([idx_op, tf.range(self.n_syn)], axis=1)
-//
-//         # Create a vector of new spike times (non-spikes are assigned a negative time)
-//         new_spikes_op = tf.where(self.syn_has_spiked,
-//                                  tf.constant(0.0, shape=[self.n_syn]),
-//                                  tf.constant(-1.0, shape=[self.n_syn]))
-//
-//         # Replace older spikes by new ones
-//         return tf.scatter_nd_update(old_spikes_op, coord_op, new_spikes_op)
 function updateSpikeTimes(){
-    console.log("spikesBySynapse before update: ", spikesBySynapse);
     // Increase the age of older spikes
     for (let synapse = 0; synapse < numSynapses; synapse++) {
         for (let i = 0; i < maxSpikes; i++) {
@@ -235,7 +218,6 @@ function updateSpikeTimes(){
         // add the new spike
         spikesBySynapse[synapse].push(synapseHasSpiked[synapse] ? 0 : -1);
     }
-    console.log("spikesBySynapse after update: ", spikesBySynapse);
 }
 
 function getSynapticInput(){
@@ -245,7 +227,6 @@ function getSynapticInput(){
             let spikeTime = spikesBySynapse[synapse][spike];
             let spikeInput;
             if(spikeTime >= 0){
-                console.log("spikeTime: ", spikeTime);
                 spikeInput = (charge/synapticTimeConstant)*(Math.exp(-spikeTime/synapticTimeConstant));
             }else {
                 spikeInput = 0;
