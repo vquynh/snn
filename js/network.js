@@ -1,26 +1,46 @@
 // create an array with nodes
-var nodes = new vis.DataSet([
-    { id: 1, label: "Neuron 1" },
-    { id: 2, label: "Neuron 2" },
-    { id: 3, label: "Neuron 3" },
-    { id: 4, label: "Neuron 4" },
-    { id: 5, label: "Neuron 5" }
-]);
+let numNeurons = 100;
 
-// create an array with edges
-var edges = new vis.DataSet([
-    { from: 1, to: 3 },
-    { from: 1, to: 2 },
-    { from: 2, to: 4 },
-    { from: 2, to: 5 },
-    { from: 3, to: 3 }
-]);
+window.addEventListener("load", () => {
+    drawNetwork();
+});
+
+function getNodes(){
+    let nodes = new vis.DataSet();
+    for (let i = 0; i < numNeurons; i++) {
+        nodes.add({id: i, label: "Neuron" + i});
+    }
+    return nodes;
+}
+
+function getEdges(){
+    let edges = new vis.DataSet();
+    let numSynapses = Number(document.getElementById("numSynapses").getAttribute("value"));
+    for (let i = 0; i < numNeurons; i++) {
+        for (let syn = 0; syn < numSynapses/5; syn++){
+            let dest =  Math.floor(Math.random() * numNeurons);
+            edges.add({from: i, to: dest});
+        }
+    }
+    return edges;
+}
 
 // create a network
-var container = document.getElementById("network");
-var data = {
-    nodes: nodes,
-    edges: edges
-};
-var options = {};
-var network = new vis.Network(container, data, options);
+function drawNetwork(){
+    var container = document.getElementById("network");
+    var data = {
+        nodes: getNodes(),
+        edges: getEdges()
+    };
+    var options = {};
+    var network = new vis.Network(container, data, options);
+}
+
+function updateNeurons(event){
+    numNeurons = Number(event.target.value);
+    document.getElementById("numNeuronsValue").innerText = "Number of neurons: " + numNeurons;
+    drawNetwork();
+}
+
+document.getElementById("numNeurons").addEventListener("change",
+        event => updateNeurons(event), false);

@@ -24,7 +24,7 @@
     <div class="row">
       <div>
         <div class="btn-group btn-group-sm" style="padding-top: 5px;">20</div>
-        <input type="range" min="20" max="200" v-model.number="numSynapses" id="numSynapses">
+        <input type="range" min="20" max="200" value="30" v-model.number="numSynapses" id="numSynapses">
         <div class="btn-group btn-group-sm" style="padding-top: 5px;">200</div>
       </div>
     </div>
@@ -48,16 +48,16 @@
 
   <div class="col-sm-3">
     <div class="row">
-      <div id="potentialThresholdValue">
-        <label for="potentialThreshold">Potential threshold:</label>
-        1mV
+      <div id="numNeuronsValue">
+        <label for="numNeurons">Number of neurons:</label>
+        50
       </div>
     </div>
     <div class="row">
       <div>
-        <div class="btn-group btn-group-sm" style="padding-top: 5px;">0.1mV</div>
-        <input type="range" min="1" max="50" v-model.number="potentialThreshold" id="potentialThreshold">
-        <div class="btn-group btn-group-sm" style="padding-top: 5px;">5mV</div>
+        <div class="btn-group btn-group-sm" style="padding-top: 5px;">20</div>
+        <input type="range" min="20" max="200" v-model.number="numNeurons" id="numNeurons">
+        <div class="btn-group btn-group-sm" style="padding-top: 5px;">200</div>
       </div>
     </div>
   </div>
@@ -90,7 +90,7 @@
 
     <div class="col-sm-6">
       <div class="card">
-        <div class="card-header">Network</div>
+        <div class="card-header">Visualisation of the Neural Network</div>
         <div class="card-img" id="network"></div>
       </div>
     </div>

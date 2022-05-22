@@ -12,7 +12,12 @@ An interactive visualisation of spiking neural network
   - Everytime the parameter changes, the visualisation will start from t=0
 
 ## Interpretation
-- 
+- Increasing the `number of synapses` as well as the `spiking frequency` of the synapses both increases the 
+synaptic input and thus increases the membrane potential, making the neuron spikes more often.
+- There are other factors that can have positive effect on the number of spikes, such as the `neuron synaptic charge (q)`, 
+the `synaptic efficacy (w)` and the `maximum number of spikes` that can be remembered. 
+Whereas other factors, such as the `synaptic time constant` or `rest time constant` have negative effect on the spikes.
+For simplicity's sake, in this visualisation, these parameters are hard-coded.
 
 ## How the visualisation is built
 ### SNN simulation with the leaky integrate-and-fire (LIF) model
@@ -80,7 +85,7 @@ function drawCharts() {
 }
 ```
 
-### Visualisation of neural networks with vis.js
+### Visualisation of neural networks with vis.js (work-in-progress)
 Inspired by the article [Asynchronous Neural Networks in JavaScript](https://desalasworks.com/article/asynchronous-neural-networks-in-javascript/) 
 by Steven de Salas, this visualisation uses [vis.js](https://visjs.org) to visualise the spiking neural network.
 

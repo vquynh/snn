@@ -158,8 +158,6 @@ function addEventListeners(){
             event => updateNumSynapses(event), false);
     document.getElementById('spikingFrequency').addEventListener('change',
             event => updateSpikingFrequency(event), false);
-    document.getElementById('potentialThreshold').addEventListener('change',
-            event => updatePotentialThreshold(event), false);
 }
 
 function updateNumSynapses(event){
@@ -170,22 +168,15 @@ function updateSpikingFrequency(event){
     updateValue(event, "spikingFrequency");
 }
 
-function updatePotentialThreshold(event){
-    updateValue(event, "potentialThreshold");
-}
-
 function updateValue(event, elementId){
         const value = Number(event.target.value);
         let innerText;
         if(elementId === "numSynapses"){
             numSynapses = value;
             innerText = "Number of synapses: " + numSynapses;
-        }else if (elementId === "spikingFrequency"){
+        }else {
             spikingFrequency = value;
             innerText =  "Spiking frequency: " + spikingFrequency + "Hz";
-        }else {
-            potentialThreshold = value/10;
-            innerText =  "Potential Threshold: " + potentialThreshold + "mV";
         }
         clearInterval(intervalId);
         inputData = getDefaultInputData();
